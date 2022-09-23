@@ -95,11 +95,11 @@ export interface IMetaData {
 
 export interface ISeen {
   targetId: number;
-  type: 'private_message';
+  type: 'private_message' | 'notification' | 'group_message';
   profile: number
   value: number;
-  createdAt: number;
-  updatedAt: number;
+  createdAt?: number;
+  updatedAt?: number;
 }
 
 export interface IGlobalContext {
