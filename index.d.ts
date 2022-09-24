@@ -94,10 +94,10 @@ export interface IMetaData {
 }
 
 export interface ISeen {
-  targetId: number;
+  targetId?: number;
   type: 'private_message' | 'notification' | 'group_message';
   profile: number
-  value: number;
+  value?: number;
   createdAt?: number;
   updatedAt?: number;
 }
