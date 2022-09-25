@@ -36,6 +36,7 @@ export interface IMessage {
 export interface IConnection {
   id: number;
   chats?: IMessage[];
+  seen: ISeen;
   oldestMessage?: IMessage;
   latestMessage?: IMessage;
 };
@@ -111,13 +112,13 @@ export interface IGlobalContext {
   metaData?: IMetaData | null;
   isLoading: boolean;
   showChat: boolean;
-  setShowChat: (showChat: boolean) => void;
+  setShowChat: (showChat: boolean) => void; 
   setAccessToken: (token: string | null) => void;
   signIn: (token: string) => void;
   savePrivateMessages: (data: IMessageResult) => void;
+  setMessageSeen: (connectionId: number, data: ISeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
   setMeta: (newMetaData: IMetaData) => void;
-  getMeta: () => IMetaData | null;
   meta: IMetaData | null;
 }
