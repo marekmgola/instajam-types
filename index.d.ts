@@ -1,5 +1,5 @@
-import { Ref } from 'react';
-import { Socket } from 'socket.io-client';
+import { Ref } from "react";
+import { Socket } from "socket.io-client";
 
 export interface IImageFormat {
   ext: string;
@@ -11,7 +11,7 @@ export interface IImageFormat {
   size: number;
   url: string;
   width: number;
-};
+}
 
 export interface IImage {
   alternativeText: string;
@@ -22,7 +22,7 @@ export interface IImage {
     small: IImageFormat;
     thumbnail: IImageFormat;
   };
-};
+}
 
 export interface IMessage {
   id: number;
@@ -31,15 +31,15 @@ export interface IMessage {
   author: IProfile;
   connection: IConnection;
   color?: string;
-};
+}
 
 export interface IConnection {
   id: number;
   chats?: IMessage[];
-  seen: ISeen;
+  seen?: ISeen;
   oldestMessage?: IMessage;
   latestMessage?: IMessage;
-};
+}
 
 export interface IProfile {
   id: number;
@@ -47,19 +47,21 @@ export interface IProfile {
   jammates: IProfile[];
   avatar: IImage;
   profileRoomId: string;
+  profileBroadcastRoomId: string;
   connection: IConnection;
   onChatSelect: () => void;
-};
+}
 
 export interface IAccount {
   id: number;
   accessToken?: string;
   username: string;
-};
+}
 
 export interface IMetadata {
   account?: IAccount;
   profiles?: IProfile[];
+  posts: IMessage[];
 }
 
 export interface IJam {
@@ -80,12 +82,15 @@ export interface ICategory {
 export interface IMessageResult {
   chats: IMessage[];
   connectionId: number;
-};
-
+}
+export interface IPostResult {
+  posts: IMessage[];
+  loadMore?: boolean;
+}
 export interface INewJammateConnectionResult {
   newConnection: IConnection;
   profile: IProfile;
-};
+}
 
 export interface IMetaData {
   account?: IAccount;
@@ -96,8 +101,8 @@ export interface IMetaData {
 
 export interface ISeen {
   targetId?: number;
-  type: 'private_message' | 'notification' | 'group_message';
-  profile?: number
+  type: "private_message" | "notification" | "group_message";
+  profile?: number;
   value?: number;
   createdAt?: number;
   updatedAt?: number;
@@ -112,13 +117,15 @@ export interface IGlobalContext {
   metaData?: IMetaData | null;
   isLoading: boolean;
   showChat: boolean;
-  setShowChat: (showChat: boolean) => void; 
+  setShowChat: (showChat: boolean) => void;
   setAccessToken: (token: string | null) => void;
   signIn: (token: string) => void;
   savePrivateMessages: (data: IMessageResult) => void;
+  savePosts: (data: IPostResult) => void;
   setMessageSeen: (connectionId: number, data: ISeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
   setMeta: (newMetaData: IMetaData) => void;
   meta: IMetaData | null;
+  posts: IMessage[];
 }
