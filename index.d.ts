@@ -41,6 +41,14 @@ export interface IConnection {
   latestMessage?: IMessage;
 }
 
+export interface INotification {
+  id: number;
+  data: IMessage;
+  createdAt: string;
+  updatedAt: string;
+  type: "new_post_notification";
+}
+
 export interface IProfile {
   id: number;
   displayName: string;
@@ -56,12 +64,6 @@ export interface IAccount {
   id: number;
   accessToken?: string;
   username: string;
-}
-
-export interface IMetadata {
-  account?: IAccount;
-  profiles?: IProfile[];
-  posts: IMessage[];
 }
 
 export interface IJam {
@@ -93,10 +95,11 @@ export interface INewJammateConnectionResult {
 }
 
 export interface IMetaData {
-  account?: IAccount;
+  account: IAccount;
   profiles: IProfile[];
   skills: ICategory[];
   genres: ICategory[];
+  posts: IPostResult;
 }
 
 export interface ISeen {
@@ -122,10 +125,12 @@ export interface IGlobalContext {
   signIn: (token: string) => void;
   savePrivateMessages: (data: IMessageResult) => void;
   savePosts: (data: IPostResult) => void;
+  saveNotifications: (data: INotification[]) => void;
   setMessageSeen: (connectionId: number, data: ISeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
   setMeta: (newMetaData: IMetaData) => void;
   meta: IMetaData | null;
   posts: IMessage[];
+  notification: INotification;
 }
