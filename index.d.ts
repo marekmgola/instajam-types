@@ -42,10 +42,11 @@ export interface IConnection {
 }
 
 export interface INotification {
-  id: number;
+  id?: number;
   data: IMessage;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  profile: number | IProfile;
   type: "new_post_notification";
 }
 
@@ -111,6 +112,11 @@ export interface ISeen {
   updatedAt?: number;
 }
 
+export interface INotificationResult {
+  notifications: INotification[];
+  loadMore?: boolean;
+}
+
 export interface IGlobalContext {
   socket: Ref<Socket>;
   setSocket: (s: Ref<Socket> | null) => void;
@@ -132,5 +138,5 @@ export interface IGlobalContext {
   setMeta: (newMetaData: IMetaData) => void;
   meta: IMetaData | null;
   posts: IMessage[];
-  notification: INotification;
+  notifications: INotificationResult;
 }
