@@ -42,6 +42,7 @@ export interface IConnection {
 }
 
 export interface INotification {
+  isSeen: boolean;
   id?: number;
   data: IMessage;
   createdAt?: string;
@@ -63,7 +64,7 @@ export interface IProfile {
 
 export interface IAccount {
   id: number;
-  accessToken?: string;
+  accessToken: string;
   username: string;
 }
 
@@ -101,6 +102,7 @@ export interface IMetaData {
   skills: ICategory[];
   genres: ICategory[];
   posts: IPostResult;
+  notifications: INotificationResult;
 }
 
 export interface ISeen {
@@ -115,6 +117,7 @@ export interface ISeen {
 export interface INotificationResult {
   notifications: INotification[];
   loadMore?: boolean;
+  seen: ISeen;
 }
 
 export interface IGlobalContext {
@@ -132,11 +135,14 @@ export interface IGlobalContext {
   savePrivateMessages: (data: IMessageResult) => void;
   savePosts: (data: IPostResult) => void;
   saveNotifications: (data: INotification[]) => void;
+  latestNotification: INotification;
   setMessageSeen: (connectionId: number, data: ISeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
   setMeta: (newMetaData: IMetaData) => void;
   meta: IMetaData | null;
   posts: IMessage[];
-  notifications: INotificationResult;
+  notifications: INotification[];
+  lastSeenNotification: ISeen;
+  saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
 }
