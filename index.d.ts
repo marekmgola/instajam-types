@@ -1,3 +1,4 @@
+import { ICategory } from "./index.d";
 import { Ref } from "react";
 import { Socket } from "socket.io-client";
 
@@ -79,10 +80,28 @@ export interface ILatLng {
   longitude: number;
 }
 
-export interface ICategory {
-  title: string;
-  parent: number;
+export interface ICategoryResult {
+  data: ICategory[];
 }
+
+export interface ICategory {
+  id: number;
+  attributes: IAttributes;
+}
+
+export interface IAttributes {
+  name: string;
+  type: any;
+  createdAt: string;
+  updatedAt: string;
+  locale: string;
+  subcategories: ISubcategories;
+}
+
+export interface ISubcategories {
+  data: ICategory[];
+}
+
 export interface IMessageResult {
   chats: IMessage[];
   connectionId: number;
