@@ -1,6 +1,6 @@
-import { ICategory } from "./index.d";
 import { Ref } from "react";
 import { Socket } from "socket.io-client";
+import { Region } from "react-native-maps"; // remove PROVIDER_GOOGLE import if not using Google Maps
 
 export interface IImageFormat {
   ext: string;
@@ -142,6 +142,10 @@ export interface INotificationResult {
 export interface IGlobalContext {
   socket: Ref<Socket>;
   setSocket: (s: Ref<Socket> | null) => void;
+  region: Ref<Region>;
+  setSocket: (s: Ref<Socket> | null) => void;
+  cateories: Ref<ICategoryResult>;
+  setCategories: (s: ICategoryResult | null) => void;
   selectedChatId?: number | null;
   setSelectedChatId: (id: number | null) => void;
   accessToken: string | null;
@@ -154,7 +158,7 @@ export interface IGlobalContext {
   savePrivateMessages: (data: IMessageResult) => void;
   savePosts: (data: IPostResult) => void;
   saveNotifications: (data: INotification[]) => void;
-  latestNotification: INotification;
+  latestNotification?: INotification;
   setMessageSeen: (connectionId: number, data: ISeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
@@ -162,6 +166,7 @@ export interface IGlobalContext {
   meta: IMetaData | null;
   posts: IMessage[];
   notifications: INotification[];
-  lastSeenNotification: ISeen;
+  categories: ICategoryResult;
+  lastSeenNotification?: ISeen;
   saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
 }
