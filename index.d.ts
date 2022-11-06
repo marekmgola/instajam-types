@@ -141,8 +141,8 @@ export interface INotificationResult {
 
 export interface IGlobalContext {
   socket: Ref<Socket>;
-  setSocket: (s: Ref<Socket> | null) => void;
-  region?: Ref<Region>;
+  setRegion (s: Ref<Region> | null) => void;
+  region: Ref<Region>;
   setSocket: (s: Ref<Socket> | null) => void;
   cateories: Ref<ICategoryResult>;
   setCategories: (s: ICategoryResult | null) => void;
