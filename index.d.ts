@@ -1,6 +1,6 @@
 import { Ref } from "react";
 import { Socket } from "socket.io-client";
-import { Region } from "react-native-maps"; // remove PROVIDER_GOOGLE import if not using Google Maps
+import { Region } from "react-native-maps";
 
 export interface IImageFormat {
   ext: string;
@@ -28,13 +28,17 @@ export interface IImage {
 export interface IMessage {
   id: number;
   message: string;
-  createdAt: string;
   author: IProfile;
+  createdAt?: string;
+  updatedAt?: string;
   connection: IConnection;
   color?: string;
 }
 
 export interface IConnection {
+  createdAt?: string;
+  updatedAt?: string;
+  chatRoomId?: string;
   id: number;
   chats?: IMessage[];
   seen?: ISeen;
@@ -54,6 +58,8 @@ export interface INotification {
 
 export interface IProfile {
   id: number;
+  createdAt?: string;
+  updatedAt?: string;
   displayName: string;
   jammates: IProfile[];
   avatar: IImage;
@@ -69,23 +75,56 @@ export interface IAccount {
   username: string;
 }
 
-export interface IJam {
-  title: string;
+export type Geom = {
+  type: "Point";
+  coordinates: [number, number];
+};
+
+export type IJamSingleton = {
+  id: number;
+  createdAt?: string;
+  updatedAt?: string;
+  geom: Geom;
+  name: string;
   description: string;
-  coords: ILatLng;
+  startDate: string;
+  endDate: string;
+  address: string;
+  host: Partial<IProfile>;
+  attending: Array<Partial<IProfile>>;
+  checkedIn: Array<Partial<IProfile>>;
+};
+
+export interface IJam extends ILatLng {
+  id: number;
+  name: string;
+  address?: string;
+  description?: string;
+  genres: string;
+  host: IProfile;
+  invited: IProfile[];
+  attending: IProfile[];
+  checkedIn: IProfile[];
+  type: JamType;
 }
 
+export type JamType = "public" | "private" | "show";
 export interface ILatLng {
   latitude: number;
   longitude: number;
+  distance?: number;
 }
 
 export interface ICategoryResult {
   data: ICategory[];
 }
 
+export interface IParentCategory {
+  name: string;
+}
 export interface ICategory {
   id: number;
+  parent?: IParentCategory;
   attributes: IAttributes;
 }
 
@@ -141,11 +180,8 @@ export interface INotificationResult {
 
 export interface IGlobalContext {
   socket: Ref<Socket>;
-  setRegion (s: Ref<Region> | null) => void;
-  region: Ref<Region>;
   setSocket: (s: Ref<Socket> | null) => void;
-  cateories: Ref<ICategoryResult>;
-  setCategories: (s: ICategoryResult | null) => void;
+  getRegion: () => Region;
   selectedChatId?: number | null;
   setSelectedChatId: (id: number | null) => void;
   accessToken: string | null;
@@ -166,7 +202,12 @@ export interface IGlobalContext {
   meta: IMetaData | null;
   posts: IMessage[];
   notifications: INotification[];
-  categories: ICategoryResult;
+  categories: Ref<ICategoryResult>;
+  getCategory: (catId: number) => ICategory | undefined;
+  getCategories: (type: "skill" | "genre") => ICategory[];
+  setCategories: (s: ICategoryResult) => void;
   lastSeenNotification?: ISeen;
   saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
+  currentJamId?: number;
+  setCurrentJamId: (newJamId: number | undefined) => void;
 }
