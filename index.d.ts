@@ -48,7 +48,7 @@ export interface IConnection {
 
 export interface INotification {
   isSeen: boolean;
-  id?: number;
+  id: number;
   data: IMessage;
   createdAt?: string;
   updatedAt?: string;
@@ -86,6 +86,7 @@ export type IJamSingleton = {
   updatedAt?: string;
   geom: Geom;
   name: string;
+  genres: ICategory[];
   description: string;
   startDate: string;
   endDate: string;
@@ -109,6 +110,7 @@ export interface IJam extends ILatLng {
 }
 
 export type JamType = "public" | "private" | "show";
+
 export interface ILatLng {
   latitude: number;
   longitude: number;
@@ -119,6 +121,10 @@ export interface ICategoryResult {
   data: ICategory[];
 }
 
+export interface IJamListResult {
+  jams: IJam[];
+  loadMore: boolean;
+}
 export interface IParentCategory {
   name: string;
 }
