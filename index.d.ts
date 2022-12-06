@@ -87,6 +87,7 @@ export type IJamSingleton = {
   geom: Geom;
   name: string;
   genres: ICategory[];
+  distance: number;
   description: string;
   startDate: string;
   endDate: string;
@@ -109,7 +110,7 @@ export interface IJam extends ILatLng {
   type: JamType;
 }
 
-export type JamType = "public" | "private" | "show";
+export type JamType = "public" | "connections-only" | "private" | "show";
 
 export interface ILatLng {
   latitude: number;
@@ -122,7 +123,7 @@ export interface ICategoryResult {
 }
 
 export interface IJamListResult {
-  jams: IJam[];
+  jams: IJamSingleton[];
   loadMore: boolean;
 }
 export interface IParentCategory {
@@ -209,6 +210,12 @@ export interface IGlobalContext {
   posts: IMessage[];
   notifications: INotification[];
   categories: Ref<ICategoryResult>;
+  jamListUpcoming: IJamListResult | null;
+  jamListPast: IJamListResult | null;
+  setJamList: (
+    jamListResult: IJamListResult,
+    type: "upcoming" | "past"
+  ) => void;
   getCategory: (catId: number) => ICategory | undefined;
   getCategories: (type: "skill" | "genre") => ICategory[];
   setCategories: (s: ICategoryResult) => void;
