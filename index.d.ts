@@ -1,5 +1,4 @@
 import { Ref } from "react";
-import { Socket } from "socket.io-client";
 import { Region } from "react-native-maps";
 
 export interface IImageFormat {
@@ -186,10 +185,8 @@ export interface INotificationResult {
 }
 
 export interface IGlobalContext {
-  socket: Ref<Socket>;
-  setSocket: (s: Ref<Socket> | null) => void;
-  getRegion: () => Region;
-  selectedChatId?: number | null;
+  getRegion: () => Region | null;
+  selectedChatId: number | null;
   setSelectedChatId: (id: number | null) => void;
   accessToken: string | null;
   metaData?: IMetaData | null;
@@ -199,7 +196,7 @@ export interface IGlobalContext {
   setAccessToken: (token: string | null) => void;
   signIn: (token: string) => void;
   savePrivateMessages: (data: IMessageResult) => void;
-  savePosts: (data: IPostResult) => void;
+  savePosts: (data: IMessage[]) => void;
   saveNotifications: (data: INotification[]) => void;
   latestNotification?: INotification;
   setMessageSeen: (connectionId: number, data: ISeen) => void;
@@ -209,7 +206,7 @@ export interface IGlobalContext {
   meta: IMetaData | null;
   posts: IMessage[];
   notifications: INotification[];
-  categories: Ref<ICategoryResult>;
+  categories: Ref<ICategoryResult | null>;
   jamListUpcoming: IJamListResult | null;
   jamListPast: IJamListResult | null;
   setJamList: (
@@ -219,7 +216,7 @@ export interface IGlobalContext {
   getCategory: (catId: number) => ICategory | undefined;
   getCategories: (type: "skill" | "genre") => ICategory[];
   setCategories: (s: ICategoryResult) => void;
-  lastSeenNotification?: ISeen;
+  lastSeenNotification: ISeen | null;
   saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
   currentJamId?: number;
   setCurrentJamId: (newJamId: number | undefined) => void;
