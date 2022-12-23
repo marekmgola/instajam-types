@@ -1,5 +1,6 @@
-import { Ref } from "react";
+import { MutableRefObject, Ref, RefObject } from "react";
 import { Region } from "react-native-maps";
+import { Socket } from "socket.io-client";
 
 export interface IImageFormat {
   ext: string;
@@ -83,7 +84,7 @@ export type IJamSingleton = {
   id: number;
   createdAt?: string;
   updatedAt?: string;
-  geom: Geom;
+  jam_geom: Geom;
   name: string;
   genres: ICategory[];
   distance: number;
@@ -178,18 +179,51 @@ export interface ISeen {
   updatedAt?: number;
 }
 
+export type MatchFeedResult<T> = {
+  loadMore: boolean;
+  data: T[];
+};
+
+export type ProfileMatchFeedbackResult = {
+  match: boolean;
+  matchingProfile: IProfile | null;
+  newJammates: IProfile[];
+};
+
 export interface INotificationResult {
   notifications: INotification[];
   loadMore?: boolean;
   seen: ISeen;
 }
 
+export interface ILoggedInContext {
+  socket: MutableRefObject<Socket | null>;
+  profileMatchFormSubmitted: MutableRefObject<boolean>;
+}
+
+type PermissionType = "location" | "gallery" | "camera";
+type StorageType =
+  | "autoLogin"
+  | "rememberMe"
+  | "username"
+  | "password"
+  | "grantedLocationPerms";
+
 export interface IGlobalContext {
+  getChatBadgeOpen: () => boolean;
+  setChatBadgeOpen: (chatBadgeStatus: boolean) => void;
+  getLocalStorageItems: (
+    itemNames: StorageType[]
+  ) => Promise<Array<string | null>>;
+  deleteLocalStorageItems: (itemNames: StorageType[]) => Promise<void>;
+  setLocalStorageItems: (
+    itemsMap: Partial<Record<StorageType, string>>
+  ) => Promise<void>;
   getRegion: () => Region | null;
+  setRegion: (newRegion: Region) => void;
   selectedChatId: number | null;
   setSelectedChatId: (id: number | null) => void;
   accessToken: string | null;
-  metaData?: IMetaData | null;
   isLoading: boolean;
   showChat: boolean;
   setShowChat: (showChat: boolean) => void;
@@ -216,6 +250,8 @@ export interface IGlobalContext {
   getCategory: (catId: number) => ICategory | undefined;
   getCategories: (type: "skill" | "genre") => ICategory[];
   setCategories: (s: ICategoryResult) => void;
+  getPermission: (permissionType: PermissionType) => boolean;
+  setPermission: (permissionType: PermissionType, value: boolean) => void;
   lastSeenNotification: ISeen | null;
   saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
   currentJamId?: number;
