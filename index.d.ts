@@ -1,205 +1,76 @@
-import { MutableRefObject, Ref, RefObject } from "react";
+import {
+  Message,
+  User,
+  FriendShip,
+  Notification,
+  Jam,
+  Genre,
+  MessageSeen,
+  Post,
+} from "./prisma/prisma-client-js";
+import { MutableRefObject, Ref } from "react";
 import { Region } from "react-native-maps";
 import { Socket } from "socket.io-client";
-
-export interface IImageFormat {
-  ext: string;
-  hash: string;
-  height: number;
-  mime: string;
-  name: string;
-  path: null;
-  size: number;
-  url: string;
-  width: number;
-}
-
-export interface IImage {
-  alternativeText: string;
-  caption: string;
-  createdAt: string;
-  formats: {
-    medium: IImageFormat;
-    small: IImageFormat;
-    thumbnail: IImageFormat;
-  };
-}
-
-export interface IMessage {
-  id: number;
-  message: string;
-  author: IProfile;
-  createdAt?: string;
-  updatedAt?: string;
-  connection: IConnection;
-  color?: string;
-}
-
-export interface IConnection {
-  createdAt?: string;
-  updatedAt?: string;
-  chatRoomId?: string;
-  id: number;
-  chats?: IMessage[];
-  seen?: ISeen;
-  oldestMessage?: IMessage;
-  latestMessage?: IMessage;
-}
-
-export interface INotification {
-  isSeen: boolean;
-  id: number;
-  data: IMessage;
-  createdAt?: string;
-  updatedAt?: string;
-  profile: number | IProfile;
-  type: "new_post_notification";
-}
-
-export interface IProfile {
-  id: number;
-  createdAt?: string;
-  updatedAt?: string;
-  displayName: string;
-  jammates: IProfile[];
-  avatar: IImage;
-  profileRoomId: string;
-  profileBroadcastRoomId: string;
-  connection: IConnection;
-  onChatSelect: () => void;
-}
-
-export interface IAccount {
-  id: number;
-  accessToken: string;
-  username: string;
-}
 
 export type Geom = {
   type: "Point";
   coordinates: [number, number];
 };
 
-export type IJamSingleton = {
-  id: number;
-  createdAt?: string;
-  updatedAt?: string;
-  jam_geom: Geom;
-  name: string;
-  genres: ICategory[];
-  distance: number;
-  description: string;
-  startDate: string;
-  endDate: string;
-  address: string;
-  host: Partial<IProfile>;
-  attending: Array<Partial<IProfile>>;
-  checkedIn: Array<Partial<IProfile>>;
-};
-
-export interface IJam extends ILatLng {
-  id: number;
-  name: string;
-  address?: string;
-  description?: string;
-  genres: string;
-  host: IProfile;
-  invited: IProfile[];
-  attending: IProfile[];
-  checkedIn: IProfile[];
-  type: JamType;
-}
-
-export type JamType = "public" | "connections-only" | "private" | "show";
-
-export interface ILatLng {
+export type LatLng = {
   latitude: number;
   longitude: number;
   distance?: number;
-}
+};
 
-export interface ICategoryResult {
-  data: ICategory[];
-}
+export type GenreResult = {
+  data: Genre[];
+};
 
-export interface IJamListResult {
-  jams: IJamSingleton[];
+export type JamListResult = {
+  jams: Jam[];
   loadMore: boolean;
-}
-export interface IParentCategory {
-  name: string;
-}
-export interface ICategory {
-  id: number;
-  parent?: IParentCategory;
-  attributes: IAttributes;
-}
+};
 
-export interface IAttributes {
-  name: string;
-  type: any;
-  createdAt: string;
-  updatedAt: string;
-  locale: string;
-  subcategories: ISubcategories;
-}
+export type JamSearchResult = JamWithGeo[];
 
-export interface ISubcategories {
-  data: ICategory[];
-}
-
-export interface IMessageResult {
-  chats: IMessage[];
-  connectionId: number;
-}
-export interface IPostResult {
-  posts: IMessage[];
+export type MessageResult = {
+  chats: Message[];
   loadMore?: boolean;
-}
-export interface INewJammateConnectionResult {
-  newConnection: IConnection;
-  profile: IProfile;
-}
+};
+export type PostResult = {
+  posts: Post[];
+  loadMore?: boolean;
+};
+export type NewJammateConnectionResult = {
+  newConnection: FriendShip;
+  profile: User;
+};
 
-export interface IMetaData {
-  account: IAccount;
-  profiles: IProfile[];
-  skills: ICategory[];
-  genres: ICategory[];
-  posts: IPostResult;
+export type MetaData = {
+  account: User;
+  skills: Genre[];
+  genres: Genre[];
+  posts: PostResult;
   notifications: INotificationResult;
-}
-
-export interface ISeen {
-  targetId?: number;
-  type: "private_message" | "notification" | "group_message";
-  profile?: number;
-  value?: number;
-  createdAt?: number;
-  updatedAt?: number;
-}
-
-export type MatchFeedResult<T> = {
-  loadMore: boolean;
-  data: T[];
+  friends: FriendShip[];
 };
 
-export type ProfileMatchFeedbackResult = {
+export type FeedbackResult = {
   match: boolean;
-  matchingProfile: IProfile | null;
-  newJammates: IProfile[];
+  matchingUser?: User;
 };
 
-export interface INotificationResult {
-  notifications: INotification[];
+export type INotificationResult = {
+  notifications: Notification[];
   loadMore?: boolean;
-  seen: ISeen;
-}
+  seen: MessageSeen;
+};
 
-export interface ILoggedInContext {
+export type ILoggedInContext = {
   socket: MutableRefObject<Socket | null>;
   profileMatchFormSubmitted: MutableRefObject<boolean>;
-}
+};
 
 type PermissionType = "location" | "gallery" | "camera";
 type StorageType =
@@ -209,7 +80,7 @@ type StorageType =
   | "password"
   | "grantedLocationPerms";
 
-export interface IGlobalContext {
+export type IGlobalContext = {
   getChatBadgeOpen: () => boolean;
   setChatBadgeOpen: (chatBadgeStatus: boolean) => void;
   getLocalStorageItems: (
@@ -229,31 +100,68 @@ export interface IGlobalContext {
   setShowChat: (showChat: boolean) => void;
   setAccessToken: (token: string | null) => void;
   signIn: (token: string) => void;
-  savePrivateMessages: (data: IMessageResult) => void;
-  savePosts: (data: IMessage[]) => void;
-  saveNotifications: (data: INotification[]) => void;
-  latestNotification?: INotification;
-  setMessageSeen: (connectionId: number, data: ISeen) => void;
+  savePrivateMessages: (data: MessageResult) => void;
+  savePosts: (data: Message[]) => void;
+  saveNotifications: (data: Notification[]) => void;
+  latestNotification?: Notification;
+  setMessageSeen: (connectionId: number, data: MessageSeen) => void;
   signOut: () => void;
   setLoading: (showChat: boolean) => void;
-  setMeta: (newMetaData: IMetaData) => void;
-  meta: IMetaData | null;
-  posts: IMessage[];
-  notifications: INotification[];
-  categories: Ref<ICategoryResult | null>;
-  jamListUpcoming: IJamListResult | null;
-  jamListPast: IJamListResult | null;
-  setJamList: (
-    jamListResult: IJamListResult,
-    type: "upcoming" | "past"
-  ) => void;
-  getCategory: (catId: number) => ICategory | undefined;
-  getCategories: (type: "skill" | "genre") => ICategory[];
-  setCategories: (s: ICategoryResult) => void;
+  setMeta: (newMetaData: MetaData) => void;
+  meta: MetaData | null;
+  posts: Message[];
+  notifications: Notification[];
+  categories: Ref<GenreResult | null>;
+  jamListUpcoming: JamListResult | null;
+  jamListPast: JamListResult | null;
+  setJamList: (jamListResult: JamListResult, type: "upcoming" | "past") => void;
+  getCategory: (catId: number) => Genre | undefined;
+  getCategories: (type: "skill" | "genre") => Genre[];
+  setCategories: (s: GenreResult) => void;
   getPermission: (permissionType: PermissionType) => boolean;
   setPermission: (permissionType: PermissionType, value: boolean) => void;
-  lastSeenNotification: ISeen | null;
-  saveLastSeenNotification: (newLastSeenNotification: ISeen) => void;
+  lastSeenNotification: MessageSeen | null;
+  saveLastSeenNotification: (newLastSeenNotification: MessageSeen) => void;
   currentJamId?: number;
   setCurrentJamId: (newJamId: number | undefined) => void;
+};
+
+type AlreadyExistsResult = {
+  message: {
+    response: "user_already_exist";
+    status: 409;
+    message: "user_already_exist";
+    name: "HttpException";
+  };
+};
+
+type RegisterResult = {
+  success: true;
+  message: "ACCOUNT_CREATE_SUCCESS";
+  data: User;
+};
+
+export type MatchFeedResult<T> = {
+  loadMore: boolean;
+  data: T[];
+};
+
+export interface RegistrationResult {
+  message: "ACCOUNT_CREATE_SUCCESS" | "USER_ALREADY_EXISTS" | "OK";
+  data?: User;
 }
+export interface LoginResult {
+  message: "INVALID_CREDENTIALS" | "OK";
+  data?: User;
+  token?: Token;
+}
+
+export interface Token {
+  Authorization: string;
+}
+
+export type JamWithGeo = Jam & {
+  longitude: number;
+  latitude: number;
+  distance?: number;
+};

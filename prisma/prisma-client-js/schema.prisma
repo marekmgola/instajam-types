@@ -1,0 +1,191 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+  output          = "../../instajam-types/prisma/prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  login       String
+  password    String
+  displayName String?
+  avatar      String?
+  role        Role     @default(CLIENT)
+  roomId      String   @default(uuid())
+  createdAt   DateTime @default(now())
+
+  userCoords Unsupported("geometry(Point, 4326)")?
+
+  befriender FriendShip[] @relation("befriender")
+  befriendee FriendShip[] @relation("befriendee")
+
+  reviewer Feedback[] @relation("reviewer")
+  reviewee Feedback[] @relation("reviewee")
+
+  inviter JamInvitation[] @relation("inviter")
+  invitee JamInvitation[] @relation("invitee")
+
+  checkedIn Jam[] @relation("checkedIn")
+  attending Jam[] @relation("attending")
+
+  notifications Notification[]
+  posts         Post[]
+  messages      Message[]
+  messagesSeen  MessageSeen[]
+  skills        Skill[]
+  jamsHosting   Jam[]          @relation("host")
+
+  @@index([userCoords], name: "user_location_idx", type: Gist)
+  @@map("user")
+}
+
+model Jam {
+  id          Int                                   @id @default(autoincrement())
+  createdAt   DateTime                              @default(now())
+  updatedAt   DateTime                              @default(now()) @updatedAt
+  jamCoords   Unsupported("geometry(Point, 4326)")?
+  address     String?
+  name        String
+  description String
+  image       String?
+  startDate   DateTime
+  endDate     DateTime
+  jamType     JamType                               @default(PUBLIC)
+  host        User                                  @relation("host", fields: [hostId], references: [id], onDelete: Cascade)
+  hostId      Int
+  attending   User[]                                @relation("attending")
+  checkedIn   User[]                                @relation("checkedIn")
+  invited     JamInvitation[]
+  jamGenres   JamGenres[]
+
+  @@index([jamCoords], name: "jam_location_idx", type: Gist)
+  @@map("jam")
+}
+
+model JamGenres {
+  id Int @id @default(autoincrement())
+
+  jam     Jam    @relation(fields: [jamId], references: [id], onDelete: Cascade)
+  jamId   Int
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  genreId String
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  ROOT
+}
+
+enum JamType {
+  PUBLIC
+  FRIENDS
+  PRIVATE
+  SHOW
+}
+
+enum NotificationType {
+  NEW_POST
+  NEW_MATCH
+}
+
+model Feedback {
+  id Int @id @default(autoincrement())
+
+  reviewer   User @relation("reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewerId Int
+
+  reviewee   User @relation("reviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
+  revieweeId Int
+
+  approved Boolean
+
+  @@map("feedback")
+}
+
+model JamInvitation {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  jam   Jam @relation(fields: [jamId], references: [id], onDelete: Cascade)
+  jamId Int
+
+  invitee   User @relation("invitee", fields: [inviteeId], references: [id], onDelete: Cascade)
+  inviteeId Int
+  inviter   User @relation("inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId Int
+
+  @@map("invited")
+}
+
+model FriendShip {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  befriender   User @relation("befriender", fields: [befrienderId], references: [id], onDelete: Cascade)
+  befrienderId Int
+
+  befriendee   User      @relation("befriendee", fields: [befriendeeId], references: [id], onDelete: Cascade)
+  befriendeeId Int
+  Message      Message[]
+
+  @@map("friendship")
+}
+
+model Genre {
+  id        String      @id
+  jamGenres JamGenres[]
+
+  @@map("genre")
+}
+
+model Skill {
+  id   Int    @id @default(autoincrement())
+  slug String
+  user User[]
+
+  @@map("skill")
+}
+
+model Notification {
+  id               Int              @id @default(autoincrement())
+  createdAt        DateTime         @default(now())
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           Int
+  notificationType NotificationType
+  data             Json
+
+  @@map("notification")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  message   String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int
+
+  @@map("post")
+}
+
+model Message {
+  id           Int        @id @default(autoincrement())
+  message      String
+  createdAt    DateTime   @default(now())
+  friendship   FriendShip @relation(fields: [friendShipId], references: [id])
+  friendShipId Int
+  author       User       @relation(fields: [authorId], references: [id])
+  authorId     Int
+}
+
+model MessageSeen {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}

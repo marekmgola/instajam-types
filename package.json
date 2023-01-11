@@ -6,6 +6,7 @@
     "cp2projects": "cp -r ./* ../instajam-host/node_modules/@types/instajam/ && cp -r ./* ../instajam-frontend-app/node_modules/@types/instajam/ && cp -r ./* ../instajam/node_modules/@types/instajam/"
   },
   "dependencies": {
+    "@prisma/client": "4.8.0",
     "react": "^18.2.0",
     "react-native-maps": "^1.3.2",
     "socket.io-client": "^4.5.4"
